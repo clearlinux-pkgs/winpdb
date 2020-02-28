@@ -4,16 +4,16 @@
 #
 Name     : winpdb
 Version  : 1.5.0
-Release  : 6
+Release  : 7
 URL      : https://github.com/bluebird75/winpdb/archive/WINPDB_1_5_0.tar.gz
 Source0  : https://github.com/bluebird75/winpdb/archive/WINPDB_1_5_0.tar.gz
-Summary  : No detailed summary available
+Summary  : A platform independent Python debugger
 Group    : Development/Tools
 License  : GPL-2.0
-Requires: winpdb-bin
-Requires: winpdb-python3
-Requires: winpdb-license
-Requires: winpdb-python
+Requires: winpdb-bin = %{version}-%{release}
+Requires: winpdb-license = %{version}-%{release}
+Requires: winpdb-python = %{version}-%{release}
+Requires: winpdb-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
 
 %description
@@ -24,7 +24,7 @@ Winpdb*
 %package bin
 Summary: bin components for the winpdb package.
 Group: Binaries
-Requires: winpdb-license
+Requires: winpdb-license = %{version}-%{release}
 
 %description bin
 bin components for the winpdb package.
@@ -41,7 +41,7 @@ license components for the winpdb package.
 %package python
 Summary: python components for the winpdb package.
 Group: Default
-Requires: winpdb-python3
+Requires: winpdb-python3 = %{version}-%{release}
 
 %description python
 python components for the winpdb package.
@@ -58,20 +58,29 @@ python3 components for the winpdb package.
 
 %prep
 %setup -q -n winpdb-WINPDB_1_5_0
+cd %{_builddir}/winpdb-WINPDB_1_5_0
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1535859294
-python3 setup.py build -b py3
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1582902513
+# -Werror is for werrorists
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
+export MAKEFLAGS=%{?_smp_mflags}
+python3 setup.py build
 
 %install
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/winpdb
-cp LICENSE.txt %{buildroot}/usr/share/doc/winpdb/LICENSE.txt
-python3 -tt setup.py build -b py3 install --root=%{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/winpdb
+cp %{_builddir}/winpdb-WINPDB_1_5_0/LICENSE.txt %{buildroot}/usr/share/package-licenses/winpdb/13b4dc9ec475a34d9a08bebecb8d5ca127bac7d2
+python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
@@ -85,8 +94,8 @@ echo ----[ mark ]----
 /usr/bin/winpdb
 
 %files license
-%defattr(-,root,root,-)
-/usr/share/doc/winpdb/LICENSE.txt
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/winpdb/13b4dc9ec475a34d9a08bebecb8d5ca127bac7d2
 
 %files python
 %defattr(-,root,root,-)

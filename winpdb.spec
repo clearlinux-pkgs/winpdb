@@ -4,7 +4,7 @@
 #
 Name     : winpdb
 Version  : 1.5.0
-Release  : 7
+Release  : 8
 URL      : https://github.com/bluebird75/winpdb/archive/WINPDB_1_5_0.tar.gz
 Source0  : https://github.com/bluebird75/winpdb/archive/WINPDB_1_5_0.tar.gz
 Summary  : A platform independent Python debugger
